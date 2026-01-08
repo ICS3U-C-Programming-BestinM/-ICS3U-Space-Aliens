@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# Created by: Mr. Coxall
-# Created on: July 2020
-# This program is the "Space Aliens" program on the PyBadge
+# Created by: bestin
+# Created on: Jan 2025
+# This program is the "Space Aliens" program with sound
 
 import ugame
 import stage
@@ -15,34 +15,33 @@ def game_scene():
     image_bank_background = stage.Bank.from_bmp16("space_aliens_background.bmp")
     image_bank_sprites = stage.Bank.from_bmp16("space_aliens.bmp")
 
-    # buttons that you want to keep state information on
+    # Set up button state for the A button
     a_button = constants.button_state["button_up"]
-    b_button = constants.button_state["button_up"]
-    start_button = constants.button_state["button_up"]
-    select_button = constants.button_state["button_up"]
 
     # get sound ready
     pew_sound = open("pew.wav", 'rb')
     sound = ugame.audio
     sound.stop()
     sound.mute(False)
-    wav = stage.WaveFile(pew_sound) # Necessary to play the sound file
 
     # sets the background to image 0 in the image bank
-    # and the size (10x8 tiles of size 16x16)
     background = stage.Grid(image_bank_background, 10, 8)
 
-    # create a stage for the background to show up on
+    # create the ship sprite
+    ship = stage.Sprite(image_bank_sprites, 5, 75, constants.SCREEN_Y - (2 * constants.SPRITE_SIZE))
+
+    # create a stage for the background and set frame rate
     game = stage.Stage(ugame.display, constants.FPS)
-    game.layers = [background]
+    game.layers = [ship] + [background]
     game.render_block()
 
+    # game loop
     while True:
         # get user input
         keys = ugame.buttons.get_pressed()
 
-        # A button to play sound
-        if keys & ugame.K_X != 0:
+        # Handle A button (Fire) logic
+        if keys & ugame.K_X:
             if a_button == constants.button_state["button_up"]:
                 a_button = constants.button_state["button_just_pressed"]
             elif a_button == constants.button_state["button_just_pressed"]:
@@ -53,12 +52,27 @@ def game_scene():
             else:
                 a_button = constants.button_state["button_up"]
 
-        # Play sound if button was just pressed
+        # If A button was just pressed, play sound
         if a_button == constants.button_state["button_just_pressed"]:
-            sound.play(wav)
+            sound.play(pew_sound)
 
-        # update game logic
-        game.tick() # wait until refresh rate finishes
+        # Ship movement logic
+        if keys & ugame.K_RIGHT:
+            if ship.x < (constants.SCREEN_X - constants.SPRITE_SIZE):
+                ship.move(ship.x + constants.SPRITE_MOVEMENT_SPEED, ship.y)
+        if keys & ugame.K_LEFT:
+            if ship.x > 0:
+                ship.move(ship.x - constants.SPRITE_MOVEMENT_SPEED, ship.y)
+        if keys & ugame.K_UP:
+            if ship.y > 0:
+                ship.move(ship.x, ship.y - constants.SPRITE_MOVEMENT_SPEED)
+        if keys & ugame.K_DOWN:
+            if ship.y < (constants.SCREEN_Y - constants.SPRITE_SIZE):
+                ship.move(ship.x, ship.y + constants.SPRITE_MOVEMENT_SPEED)
+
+        # update game logic and render
+        game.render_sprites([ship])
+        game.tick()
 
 if __name__ == "__main__":
     game_scene()

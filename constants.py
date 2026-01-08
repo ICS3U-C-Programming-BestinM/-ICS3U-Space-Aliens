@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# Created by: Mr. Coxall
-# Created on: July 2020
-# This constants file is for Space Alien game
+# Created by: bestin
+# Created on: Jan 2025
+# This file contains constants for the Space Aliens game
 
 # PyBadge screen size is 160x128 and sprites are 16x16
 SCREEN_X = 160
@@ -14,7 +14,7 @@ TOTAL_NUMBER_OF_ALIENS = 5
 FPS = 60
 SPRITE_MOVEMENT_SPEED = 1
 
-# Using for button state
+# Using for button state management
 button_state = {
     "button_up": "up",
     "button_just_pressed": "just pressed",
